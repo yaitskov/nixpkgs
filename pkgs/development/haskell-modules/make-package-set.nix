@@ -119,10 +119,10 @@ let
   };
 
   # Use cabal2nix to create a default.nix for the package sources found at 'src'.
-  haskellSrc2nix = { name, src, sha256 ? null, extraCabal2nixOptions ? "" }:
+  haskellSrc2nix = { name, src, sha256 ? null, extraCabal2nixOptions ? "", passEnvVars ? [] }:
     let
       sha256Arg = if sha256 == null then "--sha256=" else ''--sha256="${sha256}"'';
-    in buildPackages.stdenv.mkDerivation {
+    in buildPackages.stdenv.mkDerivation ({
       name = "cabal2nix-${name}";
       nativeBuildInputs = [ buildPackages.cabal2nix-unwrapped ];
       preferLocalBuild = true;
@@ -135,7 +135,7 @@ let
         mkdir -p "$out"
         cabal2nix --compiler=${self.ghc.haskellCompilerName} --system=${hostPlatform.config} ${sha256Arg} "${src}" ${extraCabal2nixOptions} > "$out/default.nix"
       '';
-  };
+    } // (builtins.listToAttrs (builtins.map (envVar: {name = envVar; value = (builtins.getEnv envVar); })  passEnvVars)));
 
   all-cabal-hashes-component = name: version: buildPackages.runCommand "all-cabal-hashes-component-${name}-${version}" {} ''
     tar --wildcards -xzvf ${all-cabal-hashes} \*/${name}/${version}/${name}.{json,cabal}
@@ -205,6 +205,7 @@ in package-set { inherit pkgs stdenv callPackage; } self // {
                    baseNameOf path == "package.yaml";
         expr = self.haskellSrc2nix {
           inherit name extraCabal2nixOptions;
+          passEnvVars = (args.passEnvVars or []);
           src = if pkgs.lib.canCleanSource src
                   then pkgs.lib.cleanSourceWith { inherit src filter; }
                 else src;
