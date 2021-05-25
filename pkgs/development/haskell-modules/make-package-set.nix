@@ -138,7 +138,7 @@ let
       '';
     } // (builtins.trace
            (builtins.concatStringsSep "" ["PASSED EXTRA VARS "
-                                          (builtins.toString (builtins.toJSON extraVars) extraVars)])
+                                          (builtins.toString (builtins.toJSON extraVars))])
            extraVars));
 
   all-cabal-hashes-component = name: version: buildPackages.runCommand "all-cabal-hashes-component-${name}-${version}" {} ''
