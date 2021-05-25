@@ -215,7 +215,24 @@ in package-set { inherit pkgs stdenv callPackage; } self // {
          });
 
     callCabal2nix = name: src: args: self.callCabal2nixWithOptions name src "" args;
-    myCallCabal2nix = name: src: args: self.callCabal2nixWithOptions name src "" args;
+
+    myCallCabal2nixWithOptions = name: src: extraCabal2nixOptions: args: passEnvVars:
+      let
+        filter = path: type:
+                   pkgs.lib.hasSuffix "${name}.cabal" path ||
+                   baseNameOf path == "package.yaml";
+        expr = self.haskellSrc2nix {
+          inherit name extraCabal2nixOptions;
+          inherit passEnvVars; # = (args.passEnvVars or []);
+          src = if pkgs.lib.canCleanSource src
+                  then pkgs.lib.cleanSourceWith { inherit src filter; }
+                else src;
+        };
+      in overrideCabal (callPackageKeepDeriver expr args) (orig: {
+           inherit src;
+         });
+
+    myCallCabal2nix = name: src: args: passEnvVars self.callCabal2nixWithOptions name src "" args passEnvVars;
 
     # : { root : Path
     #   , name : Defaulted String
