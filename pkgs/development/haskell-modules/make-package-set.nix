@@ -124,8 +124,8 @@ let
       sha256Arg = if sha256 == null then "--sha256=" else ''--sha256="${sha256}"'';
       extraVars = (builtins.listToAttrs (builtins.map (envVar: {name = envVar; value = (builtins.getEnv envVar); })  passEnvVars));
       extraVarsAsEntries = (builtins.concatStringsSep
-                             "\n"
-                             (builtins.map (envVar: (builtins.concatStringsSep "" [ "\"" envVar "\" = \"" (builtins.getEnv envVar) "\";" ]))
+                             " "
+                             (builtins.map (envVar: (builtins.concatStringsSep "" [ "export " envVar "= \"" (builtins.getEnv envVar) "\";" ]))
                                passEnvVars));
     in buildPackages.stdenv.mkDerivation ({
       name = "cabal2nix-${name}";
@@ -138,11 +138,10 @@ let
       installPhase = ''
         export HOME="$TMP"
         mkdir -p "$out"
-        cabal2nix --compiler=${self.ghc.haskellCompilerName} --system=${hostPlatform.config} ${sha256Arg} "${src}" ${extraCabal2nixOptions} | while read a ; do if [[ $a =~ isExecutable ]] ; then echo -e "${extraVarsAsEntries}\n $a" ; else echo "$a" ; fi ; done > "$out/default.nix"
+        cabal2nix --compiler=${self.ghc.haskellCompilerName} --system=${hostPlatform.config} ${sha256Arg} "${src}" ${extraCabal2nixOptions} | while read a ; do echo "TRASE: $a" 1>&2; if [[ "$a" =~ isExecutable ]] ; then echo -e "configurePhase=\"echo oooooooo; ${extraVarsAsEntries}\"; $a" ; else  echo "$a" ; fi ; done > "$out/default.nix"
       '';
     } // (builtins.trace
-           (builtins.concatStringsSep "" ["PASSED EXTRA VARS "
-                                          (builtins.toString (builtins.toJSON extraVars))])
+           (builtins.concatStringsSep "" ["PASSED EXTRA VARS " extraVarsAsEntries])
            extraVars));
 
   all-cabal-hashes-component = name: version: buildPackages.runCommand "all-cabal-hashes-component-${name}-${version}" {} ''
