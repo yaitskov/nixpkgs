@@ -215,6 +215,7 @@ in package-set { inherit pkgs stdenv callPackage; } self // {
          });
 
     callCabal2nix = name: src: args: self.callCabal2nixWithOptions name src "" args;
+    myCallCabal2nix = name: src: args: self.callCabal2nixWithOptions name src "" args;
 
     # : { root : Path
     #   , name : Defaulted String
