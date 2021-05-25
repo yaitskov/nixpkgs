@@ -232,7 +232,7 @@ in package-set { inherit pkgs stdenv callPackage; } self // {
            inherit src;
          });
 
-    myCallCabal2nix = name: src: args: passEnvVars self.callCabal2nixWithOptions name src "" args passEnvVars;
+    myCallCabal2nix = name: src: args: passEnvVars: self.callCabal2nixWithOptions name src "" args passEnvVars;
 
     # : { root : Path
     #   , name : Defaulted String
