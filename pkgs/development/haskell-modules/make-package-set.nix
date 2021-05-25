@@ -122,6 +122,7 @@ let
   haskellSrc2nix = { name, src, sha256 ? null, extraCabal2nixOptions ? "", passEnvVars ? [] }:
     let
       sha256Arg = if sha256 == null then "--sha256=" else ''--sha256="${sha256}"'';
+      extraVars = (builtins.listToAttrs (builtins.map (envVar: {name = envVar; value = (builtins.getEnv envVar); })  passEnvVars));
     in buildPackages.stdenv.mkDerivation ({
       name = "cabal2nix-${name}";
       nativeBuildInputs = [ buildPackages.cabal2nix-unwrapped ];
@@ -135,7 +136,10 @@ let
         mkdir -p "$out"
         cabal2nix --compiler=${self.ghc.haskellCompilerName} --system=${hostPlatform.config} ${sha256Arg} "${src}" ${extraCabal2nixOptions} > "$out/default.nix"
       '';
-    } // (builtins.listToAttrs (builtins.map (envVar: {name = envVar; value = (builtins.getEnv envVar); })  passEnvVars)));
+    } // (builtins.trace
+           (builtins.concatStringsSep "" ["PASSED EXTRA VARS "
+                                          (builtins.toString (builtins.toJSON extraVars) extraVars)])
+           extraVars));
 
   all-cabal-hashes-component = name: version: buildPackages.runCommand "all-cabal-hashes-component-${name}-${version}" {} ''
     tar --wildcards -xzvf ${all-cabal-hashes} \*/${name}/${version}/${name}.{json,cabal}
