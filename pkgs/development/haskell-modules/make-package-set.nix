@@ -205,7 +205,7 @@ in package-set { inherit pkgs stdenv callPackage; } self // {
                    baseNameOf path == "package.yaml";
         expr = self.haskellSrc2nix {
           inherit name extraCabal2nixOptions;
-          passEnvVars = (args.passEnvVars or []);
+          # passEnvVars = (args.passEnvVars or []);
           src = if pkgs.lib.canCleanSource src
                   then pkgs.lib.cleanSourceWith { inherit src filter; }
                 else src;
