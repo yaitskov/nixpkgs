@@ -3,9 +3,9 @@
   lib,
   buildPythonPackage,
   fetchPypi,
-  fetchpatch,
   isPyPy,
   R,
+  libdeflate,
   rWrapper,
   rPackages,
   pcre,
@@ -54,6 +54,7 @@ buildPythonPackage rec {
       bzip2
       zlib
       icu
+      libdeflate
     ]
     ++ (with rPackages; [
       # packages expected by the test framework
@@ -86,7 +87,14 @@ buildPythonPackage rec {
     simplegeneric
   ];
 
-  doCheck = !stdenv.isDarwin;
+  doCheck = !stdenv.hostPlatform.isDarwin;
+
+  # https://github.com/rpy2/rpy2/issues/1111
+  disabledTests = [
+    "test_parse_incomplete_error"
+    "test_parse_error"
+    "test_parse_error_when_evaluting"
+  ];
 
   nativeCheckInputs = [ pytestCheckHook ];
 

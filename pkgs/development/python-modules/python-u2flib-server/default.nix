@@ -2,7 +2,6 @@
   lib,
   buildPythonPackage,
   fetchFromGitHub,
-  fetchpatch,
 
   # propagates
   cryptography,
@@ -34,7 +33,7 @@ buildPythonPackage rec {
     six
   ];
 
-  passthru.optional-dependencies = {
+  optional-dependencies = {
     u2f_server = [ webob ];
   };
 
@@ -43,7 +42,7 @@ buildPythonPackage rec {
     "u2flib_server.u2f"
   ];
 
-  nativeCheckInputs = [ pytestCheckHook ] ++ passthru.optional-dependencies.u2f_server;
+  nativeCheckInputs = [ pytestCheckHook ] ++ optional-dependencies.u2f_server;
 
   meta = with lib; {
     description = "Python based U2F server library";

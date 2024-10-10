@@ -22,16 +22,16 @@
 
 buildPythonPackage rec {
   pname = "minio";
-  version = "7.2.6";
+  version = "7.2.9";
   pyproject = true;
 
-  disabled = pythonOlder "3.7";
+  disabled = pythonOlder "3.8";
 
   src = fetchFromGitHub {
     owner = "minio";
     repo = "minio-py";
     rev = "refs/tags/${version}";
-    hash = "sha256-zK+D2DNgh1cASdA2gstNW0ODUu7Dn6vMY01mcrdSSo0=";
+    hash = "sha256-ObbU0skqNBebkmX5gtJ9/QHlSZFB3tvaFnitmD+lKBc=";
   };
 
   postPatch = ''
@@ -39,9 +39,9 @@ buildPythonPackage rec {
       --replace-fail "assertEquals" "assertEqual"
   '';
 
-  nativeBuildInputs = [ setuptools ];
+  build-system = [ setuptools ];
 
-  propagatedBuildInputs = [
+  dependencies = [
     argon2-cffi
     certifi
     urllib3

@@ -2,7 +2,6 @@
   lib,
   buildPythonPackage,
   fetchPypi,
-  fetchpatch,
   pythonOlder,
 
   # runtime
@@ -52,7 +51,7 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [ sqlalchemy ] ++ lib.optionals (pythonOlder "3.8") [ importlib-metadata ];
 
-  passthru.optional-dependencies = {
+  optional-dependencies = {
     babel = [ babel ];
     arrow = [ arrow ];
     pendulum = [ pendulum ];
@@ -79,7 +78,7 @@ buildPythonPackage rec {
       pymysql
       pyodbc
     ]
-    ++ lib.flatten (builtins.attrValues passthru.optional-dependencies)
+    ++ lib.flatten (builtins.attrValues optional-dependencies)
     ++ lib.optionals (pythonOlder "3.12") [
       # requires distutils, which were removed in 3.12
       psycopg2cffi

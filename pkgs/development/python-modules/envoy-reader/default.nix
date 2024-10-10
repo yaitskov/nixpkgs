@@ -4,7 +4,7 @@
   buildPythonPackage,
   envoy-utils,
   fetchFromGitHub,
-  fetchpatch,
+  setuptools,
   httpx,
   pyjwt,
   pytest-asyncio,
@@ -17,7 +17,7 @@
 buildPythonPackage rec {
   pname = "envoy-reader";
   version = "0.21.3";
-  format = "setuptools";
+  pyproject = true;
 
   disabled = pythonOlder "3.7";
 
@@ -28,7 +28,9 @@ buildPythonPackage rec {
     hash = "sha256-aIpZ4ln4L57HwK8H0FqsyNnXosnAp3ingrJI6/MPS90=";
   };
 
-  propagatedBuildInputs = [
+  build-system = [ setuptools ];
+
+  dependencies = [
     beautifulsoup4
     envoy-utils
     httpx
@@ -42,10 +44,11 @@ buildPythonPackage rec {
     respx
   ];
 
+  pythonRelaxDeps = [ "pyjwt" ];
+
   postPatch = ''
     substituteInPlace setup.py \
-      --replace "pytest-runner>=5.2" "" \
-      --replace "pyjwt==2.1.0" "pyjwt>=2.1.0"
+      --replace-fail "pytest-runner>=5.2" ""
   '';
 
   pythonImportsCheck = [ "envoy_reader" ];

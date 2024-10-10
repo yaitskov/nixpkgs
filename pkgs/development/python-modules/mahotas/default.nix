@@ -1,7 +1,6 @@
 {
   buildPythonPackage,
   fetchFromGitHub,
-  fetchpatch,
   pillow,
   scipy,
   numpy,
@@ -50,10 +49,10 @@ buildPythonPackage rec {
 
   pythonImportsCheck = [ "mahotas" ];
 
-  disabled = stdenv.isi686; # Failing tests
+  disabled = stdenv.hostPlatform.isi686; # Failing tests
 
   meta = with lib; {
-    broken = (stdenv.isLinux && stdenv.isAarch64);
+    broken = (stdenv.hostPlatform.isLinux && stdenv.hostPlatform.isAarch64);
     description = "Computer vision package based on numpy";
     homepage = "https://mahotas.readthedocs.io/";
     maintainers = with maintainers; [ luispedro ];
