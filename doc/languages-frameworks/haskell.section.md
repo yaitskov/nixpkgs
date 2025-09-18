@@ -1210,8 +1210,32 @@ dependencies as arguments.
 `callHackage`
 : TODO
 
-`callHackageDirect`
-: TODO
+-->
+
+`callHackageDirect args`
+: Pulls an archive from [hackage](https://hackage.haskell.org/) and
+  calls [`callCabal2nix`](#haskell-cabal2nix).
+
+  `args` in an AttrSet which should contain the following attributes:
+
+  `pkg`
+  : cabal package name on hackage.
+
+  `ver`
+  : cabal package version on hackage.
+
+  `sha256`
+  : expected SHA256 hash of cabal package archive.
+
+  `candidate`
+  : if `true` look for a package candidate, which is a mutable
+    package, existing in a separete namespace, optional, by default
+    `false`.
+
+  `rev`
+  : an optional AttrSet with `revision` and `sha256`.
+
+<!--
 
 `developPackage`
 : TODO
